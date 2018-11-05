@@ -1,0 +1,65 @@
+#Q6
+library(glmnet)
+set.seed(77960)
+x1<-rnorm(100,0,1) #Q6a create random number of X
+noise<-rnorm(100,0,1) #Q6a create random number of noise
+y<-1+x1+x1^2+x1^3+noise #Q6b generate Y by 1+X+X^2+X^3+noise
+x<-cbind(x1,x1^(2),x1^(3),x1^(4),x1^(5),x1^(6),x1^(7),x1^(8),x1^(9),x1^(10))
+#X,X^2,...,X^10 predictors
+
+grid=10^seq(10,-2,length=100)
+
+train<-sample(1:nrow(x), nrow(x)/2) #Q6c Create 2-fold cross-validation train and test dataset
+
+test<-(-train) #Q6c test dataset
+y.test=y[test]
+
+lasso.mod=glmnet(x[train,],y[train],alpha=1,lambda=grid)
+plot(lasso.mod) #Q6c Fit a lasso model
+
+cv.out=cv.glmnet(x[train,],y[train],alpha=1)
+plot(cv.out) #plot the mean-sqaured error against the log(lambda)
+
+(bestlam2=cv.out$lambda.min) #find the best value of lambda
+
+
+lasso.pred=predict(lasso.mod,s=bestlam2,newx=x[test,])
+mean((lasso.pred-y.test)^2) #predict 
+
+out=glmnet(x,y,alpha=1,lambda=grid) 
+lasso.coef=predict(out,type="coefficients",s=bestlam2)[1:10,]
+lasso.coef
+
+lasso.coef[lasso.coef!=0]
+
+#Q6d
+library(glmnet)
+set.seed(77960)
+y<-1+x1^7+noise #Q6d generate new Y by 1+X^7+noise
+x<-cbind(x1,x1^(2),x1^(3),x1^(4),x1^(5),x1^(6),x1^(7),x1^(8),x1^(9),x1^(10))
+#X,X^2,...,X^10 predictors
+
+grid=10^seq(10,-2,length=100)
+
+train<-sample(1:nrow(x), nrow(x)/2) #Q6d Create 2-fold cross-validation train and test dataset
+
+test<-(-train) #Q6d test dataset
+y.test=y[test]
+
+lasso.mod=glmnet(x[train,],y[train],alpha=1,lambda=grid)
+plot(lasso.mod) #Q6d Fit a lasso model
+
+cv.out=cv.glmnet(x[train,],y[train],alpha=1)
+plot(cv.out) #plot the mean-sqaured error against the log(lambda)
+
+(bestlam2=cv.out$lambda.min)#find the best value of lambda
+
+
+lasso.pred=predict(lasso.mod,s=bestlam2,newx=x[test,])
+mean((lasso.pred-y.test)^2) #predict 
+
+out=glmnet(x,y,alpha=1,lambda=grid) 
+lasso.coef=predict(out,type="coefficients",s=bestlam2)[1:10,]
+lasso.coef
+
+lasso.coef[lasso.coef!=0]
